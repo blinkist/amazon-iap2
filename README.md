@@ -2,7 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/amazon-iap2.svg)](http://badge.fury.io/rb/amazon-iap2)
 [![VersionEye](http://www.versioneye.com/user/projects/5432726a84981fcf7300003b/badge.svg?style=flat)](http://www.versioneye.com/user/projects/5432726a84981fcf7300003b)
-[![Codeship Status for blinkist/amazon-iap2](https://www.codeship.io/projects/e6c868f0-2f7e-0132-4314-02ba1e9dff5b/status)](https://www.codeship.io/projects/39519)
+[![Dependency Status](https://www.versioneye.com/user/projects/5645bcefb5b03d002200084e/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5645bcefb5b03d002200084e)
 
 This gem is a simple implementation of the Amazon receipt verfication service outlined
 [here](https://developer.amazon.com/sdk/in-app-purchasing/documentation/rvs.html) with migrations from [here](https://developer.amazon.com/public/apis/earn/in-app-purchasing/docs-v2/verifying-receipts-in-iap-2.0)
