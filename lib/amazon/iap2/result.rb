@@ -7,7 +7,26 @@ class Amazon::Iap2::Result
                 :receipt_id,
                 :quantity,
                 :test_transaction,
-                :beta_product
+                :beta_product,
+                :term, :term_sku,
+                :renewal_date
+
+    VALID_ATTRIBUTES = %w(
+      product_type
+      product_id
+      parent_product_id
+      purchase_date
+      purchase_time
+      cancel_date
+      cancel_time
+      receipt_id
+      quantity
+      test_transaction
+      beta_product
+      term
+      term_sku
+      renewal_date
+    )
 
   def initialize(response)
     case response.code.to_i
@@ -25,7 +44,7 @@ class Amazon::Iap2::Result
 
       parsed.each do |key, value|
         underscore = key.gsub(/::/, '/').gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').tr('-', '_').downcase
-        send "#{underscore}=", value
+        send "#{underscore}=", value if VALID_ATTRIBUTES.include?(underscore.to_s.downcase)
       end
     when 400 then raise Amazon::Iap2::Exceptions::InvalidTransaction
     when 496 then raise Amazon::Iap2::Exceptions::InvalidSharedSecret

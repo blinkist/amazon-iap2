@@ -35,9 +35,18 @@ describe Amazon::Iap2::Client do
 
       expect(result.purchase_date).to eql(response["purchaseDate"])
       expect(result.purchase_time).to eql(Time.at(response["purchaseDate"] / 1000))
-      expect(result.cancel_date).to eql(response["cancelDate"])
-      expect(result.cancel_time).to eql(Time.at(response["cancelDate"] / 1000))
+      expect(result.cancel_date).to eql nil
 
+      expect(result.term).to eql(response["term"])
+      expect(result.term_sku).to eql(response["termSku"])
+      expect(result.renewal_date).to eql(response["renewalDate"])
+    end
+
+    it 'should succeed if unexpected key is returned' do
+      response = unexpected_response receipt_id
+      build_stub user_id, receipt_id, 200, response
+
+      result = subject.verify user_id, receipt_id
     end
 
   end
@@ -56,13 +65,23 @@ describe Amazon::Iap2::Client do
   def build_response(receipt_id)
     {
       "betaProduct" => true,
-      "cancelDate" => (Time.now.to_i + 2629743) * 1000, # one month from now
-      "productId" => "sub1",
+      "cancelDate" => nil,
+      "productId" => "sub1.sku",
       "productType" => "SUBSCRIPTION",
       "purchaseDate" => Time.now.to_i * 1000,
       "receiptId" => "#{receipt_id}",
-      "testTransaction" => true
+      "testTransaction" => true,
+      "term" =>  "1 YEAR",
+      "termSku" => "sub1",
+      "renewalDate" => (Time.now.to_i + 2629743) * 1000,
     }
   end
+
+  def unexpected_response(receipt_id)
+    {
+      "newValue" => 1
+    }
+  end
+
 
 end

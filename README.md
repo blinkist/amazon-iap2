@@ -58,6 +58,9 @@ result.cancel_time       # nil
 result.quantity          # 1
 result.test_transaction  # false
 result.beta_product      # false
+result.term              # term length of product type is Subscription e.g"1 YEAR" 
+result.term_sku          # sku of the product subscription 
+result.renewal_date      # renewal date of subscription product (in ms)
 ```
 
 ## Exception Handling
