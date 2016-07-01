@@ -33,8 +33,8 @@ Initialize a client, passing in the developer secret and (optionally) the host. 
 passed, it will use Amazon's production endpoint.
 
 ```ruby
-client = Amazon::Iap::Client.new 'my_developer_secret', 'http://iap-staging.domain.com' # staging server
-client = Amazon::Iap::Client.new 'my_developer_secret' # production server
+client = Amazon::Iap2::Client.new 'my_developer_secret', 'http://iap-staging.domain.com' # staging server
+client = Amazon::Iap2::Client.new 'my_developer_secret' # production server
 ```
 
 
