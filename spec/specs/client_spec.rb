@@ -41,6 +41,8 @@ describe Amazon::Iap2::Client do
       expect(result.term_sku).to eql(response["termSku"])
       expect(result.renewal_date).to eql(response["renewalDate"])
       expect(result.renewal_time).to eql(Time.at(response["renewalDate"] / 1000))
+
+      expect(result.response_data).to eql(response)
     end
 
     it 'should succeed if unexpected key is returned' do
