@@ -9,7 +9,7 @@ class Amazon::Iap2::Result
                 :test_transaction,
                 :beta_product,
                 :term, :term_sku,
-                :renewal_date
+                :renewal_date, :renewal_time
 
     VALID_ATTRIBUTES = %w(
       product_type
@@ -26,6 +26,7 @@ class Amazon::Iap2::Result
       term
       term_sku
       renewal_date
+      renewal_time
     )
 
   def initialize(response)
@@ -40,6 +41,9 @@ class Amazon::Iap2::Result
       end
       if parsed.has_key? 'cancelDate'
         parsed['cancelTime'] = parsed['cancelDate'].nil? ? nil : Time.at(parsed['cancelDate'] / 1000)
+      end
+      if parsed.has_key? 'renewalDate'
+        parsed['renewalTime'] = parsed['renewalDate'].nil? ? nil : Time.at(parsed['renewalDate'] / 1000)
       end
 
       parsed.each do |key, value|
