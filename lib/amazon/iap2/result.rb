@@ -29,26 +29,14 @@ class Amazon::Iap2::Result
       renewal_time
     )
 
-  def initialize(response)
-    case response.code.to_i
-    when 200
-      parsed = JSON.load(response.body)
+  def initialize(receipt_data)
+    parse_time!(receipt_data, 'purchase')
+    parse_time!(receipt_data, 'cancel')
+    parse_time!(receipt_data, 'renewal')
 
-      raise Amazon::Iap2::Exceptions::EmptyResponse unless parsed
-
-      parse_time!(parsed, 'purchase')
-      parse_time!(parsed, 'cancel')
-      parse_time!(parsed, 'renewal')
-
-      parsed.each do |key, value|
-        underscore = key.gsub(/::/, '/').gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').tr('-', '_').downcase
-        send "#{underscore}=", value if VALID_ATTRIBUTES.include?(underscore.to_s.downcase)
-      end
-    when 400 then raise Amazon::Iap2::Exceptions::InvalidTransaction
-    when 496 then raise Amazon::Iap2::Exceptions::InvalidSharedSecret
-    when 497 then raise Amazon::Iap2::Exceptions::InvalidUserId
-    when 500 then raise Amazon::Iap2::Exceptions::InternalError
-    else raise Amazon::Iap2::Exceptions::General
+    receipt_data.each do |key, value|
+      underscore = key.gsub(/::/, '/').gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').tr('-', '_').downcase
+      send "#{underscore}=", value if VALID_ATTRIBUTES.include?(underscore.to_s.downcase)
     end
   end
 

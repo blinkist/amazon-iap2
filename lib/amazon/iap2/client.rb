@@ -14,6 +14,19 @@ class Amazon::Iap2::Client
     uri = URI.parse "#{@host}#{path}"
     req = Net::HTTP::Get.new uri.request_uri
     res = Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') { |http| http.request req }
-    Amazon::Iap2::Result.new res
+
+    case res.code.to_i
+    when 200
+      parsed = JSON.load(res.body)
+
+      raise Amazon::Iap2::Exceptions::EmptyResponse unless parsed
+
+      Amazon::Iap2::Result.new parsed
+    when 400 then raise Amazon::Iap2::Exceptions::InvalidTransaction
+    when 496 then raise Amazon::Iap2::Exceptions::InvalidSharedSecret
+    when 497 then raise Amazon::Iap2::Exceptions::InvalidUserId
+    when 500 then raise Amazon::Iap2::Exceptions::InternalError
+    else raise Amazon::Iap2::Exceptions::General
+    end
   end
 end
