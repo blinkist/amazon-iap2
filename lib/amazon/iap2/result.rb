@@ -9,7 +9,8 @@ class Amazon::Iap2::Result
                 :test_transaction,
                 :beta_product,
                 :term, :term_sku,
-                :renewal_date
+                :renewal_date, :renewal_time,
+                :response_data
 
     VALID_ATTRIBUTES = %w(
       product_type
@@ -26,31 +27,29 @@ class Amazon::Iap2::Result
       term
       term_sku
       renewal_date
+      renewal_time
     )
 
-  def initialize(response)
-    case response.code.to_i
-    when 200
-      parsed = JSON.load(response.body)
+  def initialize(response_data)
+    @response_data = response_data
 
-      raise Amazon::Iap2::Exceptions::EmptyResponse unless parsed
+    parse_time!('purchase')
+    parse_time!('cancel')
+    parse_time!('renewal')
 
-      if parsed.has_key? 'purchaseDate'
-        parsed['purchaseTime'] = parsed['purchaseDate'].nil? ? nil : Time.at(parsed['purchaseDate'] / 1000)
-      end
-      if parsed.has_key? 'cancelDate'
-        parsed['cancelTime'] = parsed['cancelDate'].nil? ? nil : Time.at(parsed['cancelDate'] / 1000)
-      end
-
-      parsed.each do |key, value|
-        underscore = key.gsub(/::/, '/').gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').tr('-', '_').downcase
-        send "#{underscore}=", value if VALID_ATTRIBUTES.include?(underscore.to_s.downcase)
-      end
-    when 400 then raise Amazon::Iap2::Exceptions::InvalidTransaction
-    when 496 then raise Amazon::Iap2::Exceptions::InvalidSharedSecret
-    when 497 then raise Amazon::Iap2::Exceptions::InvalidUserId
-    when 500 then raise Amazon::Iap2::Exceptions::InternalError
-    else raise Amazon::Iap2::Exceptions::General
+    response_data.each do |key, value|
+      underscore = key.gsub(/::/, '/').gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').tr('-', '_').downcase
+      send "#{underscore}=", value if VALID_ATTRIBUTES.include?(underscore.to_s.downcase)
     end
   end
+
+  private
+
+    def parse_time!(key_prefix)
+      date_key = "#{key_prefix}Date"
+
+      if response_data.has_key?(date_key)
+        send("#{key_prefix}_time=", response_data[date_key].nil? ? nil : Time.at(response_data[date_key] / 1000))
+      end
+    end
 end
